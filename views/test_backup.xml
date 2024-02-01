@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--    Database backup configuration views-->
+    <record id="backup_configure_view_tree" model="ir.ui.view">
+        <field name="name">backup.configure.view.tree</field>
+        <field name="model">backup.configure</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="(not active)">
+                <field name="name"/>
+                <field name="db_name"/>
+                <field name="backup_destination"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+    <record id="backup_configure_view_form" model="ir.ui.view">
+        <field name="name">backup.configure.view.form</field>
+        <field name="model">backup.configure</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="db_name"/>
+                        <field name="master_pwd" password="True"/>
+                        <field name="backup_format"/>
+                        <field name="active" widget="boolean_toggle" attrs="{'readonly': [('hide_active', '=', False)]}"/>
+                        <field name="hide_active" invisible="1"/>
+                        <field name="auto_remove"/>
+                        <label for="days_to_remove" class="oe_inline"
+                            attrs="{'invisible': [('auto_remove', '=', False)]}"/>
+                        <div attrs="{'invisible': [('auto_remove', '=', False)]}">
+                        <field name="days_to_remove" class="oe_inline"
+                                attrs="{'required': [('auto_remove', '=', True)]}"/>
+                            Days
+                        </div>
+
+                    </group>
+                    <group>
+                            <field name="backup_destination" required="1"/>
+                            <field name="backup_path"
+                                   attrs="{'invisible': [('backup_destination', '!=', 'local')], 'required': [('backup_destination', '=', 'local')]}"/>
+                    </group> 
+                    <group>
+                            <field name="notify_user"/>
+                            <field name="user_id"
+                                   attrs="{'invisible': [('notify_user', '=', False)]}"/>
+                    </group>              
+               </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="backup_configure_action" model="ir.actions.act_window">
+        <field name="name">Database Backup</field>
+        <field name="res_model">backup.configure</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No backup configured!
+            </p>
+        </field>
+        <field name="context">{'search_default_all': 1}</field>
+    </record>
+
+     <menuitem id="backup_menu_root" name="Automatic Database Backup"
+              parent="base.menu_custom" sequence="10"/>
+    <menuitem id="backup_configure_menu" parent="backup_menu_root"
+              name="Backup Configuration"
+              action="backup_configure_action"/>
+</odoo>
